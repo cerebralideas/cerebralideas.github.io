@@ -1,0 +1,20 @@
+daniel:
+  username: daniel
+  name: Daniel Bennett
+  url_full: https://justgoodthemes.com/
+  url: justgoodthemes.com
+  bio: Daniel is a designer, photographer, speaker, author of a couple of books about typography and the founder of photo magazine Curious.
+  picture: /assets/images/daniel.jpg
+  cover: /assets/images/covers/3.jpg
+  facebook: justgoodthemes
+  twitter: justgoodthemes
+nancy:
+  username: nancy
+  name: Nancy Perez
+  url_full: https://justgoodthemes.com/
+  url: justgoodthemes.com
+  bio: Nancy is a reporter at Wild Bird magazine, where she writes about technology / design companies and the people they impact.
+  picture: /assets/images/nancy.jpg
+  cover: /assets/images/covers/2.jpg
+  facebook: justgoodthemes
+  twitter: justgoodthemes
