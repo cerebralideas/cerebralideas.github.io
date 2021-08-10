@@ -21,7 +21,7 @@
     </a>
     {% endif %}
 
-    {% if site.github %}    
+    {% if site.github %}
     <a href="https://github.com/{{ site.github }}" class="circle" target="_blank">
         <i class="icon-github" aria-hidden="true"></i>
         <span class="screen-reader-text">GitHub</span>
@@ -35,21 +35,21 @@
     </a>
     {% endif %}
 
-    {% if site.dribbble %}    
+    {% if site.dribbble %}
     <a href="https://dribbble.com/{{ site.dribbble }}" class="circle" target="_blank">
         <i class="icon-dribbble" aria-hidden="true"></i>
         <span class="screen-reader-text">Dribbble</span>
     </a>
     {% endif %}
 
-    {% if site.medium %}    
+    {% if site.medium %}
     <a href="https://medium.com/{{ site.medium }}" class="circle" target="_blank">
         <i class="icon-medium" aria-hidden="true"></i>
         <span class="screen-reader-text">Medium</span>
     </a>
     {% endif %}
 
-    {% if site.instagram %}    
+    {% if site.instagram %}
     <a href="https://www.instagram.com/{{ site.instagram }}" class="circle" target="_blank">
         <i class="icon-instagram" aria-hidden="true"></i>
         <span class="screen-reader-text">Instagram</span>
@@ -62,16 +62,20 @@
         <span class="screen-reader-text">Pinterest</span>
     </a>
     {% endif %}
-    
-    <a href="https://www.vimeo.com/{{! Add Vimeo handle }}" class="circle" target="_blank">
+
+    {% if site.vimeo %}
+    <a href="https://www.vimeo.com/{{ site.vimeo }}" class="circle" target="_blank">
         <i class="icon-vimeo" aria-hidden="true"></i>
         <span class="screen-reader-text">Vimeo</span>
     </a>
+    {% endif %}
 
-    <a href="https://www.youtube.com/user/{{! Add YouTube handle }}" class="circle" target="_blank">
+    {% if site.youtube %}
+    <a href="https://www.youtube.com/user/{{ site.youtube }}" class="circle" target="_blank">
         <i class="icon-youtube" aria-hidden="true"></i>
         <span class="screen-reader-text">YouTube</span>
     </a>
+    {% endif %}
 
     <a href="{{@blog.url}}/rss/" class="circle" target="_blank">
         <i class="icon-feed" aria-hidden="true"></i>
