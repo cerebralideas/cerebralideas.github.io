@@ -1,15 +1,20 @@
 ---
 layout: page
-title: About
-featured_image: /assets/images/pages/about.jpg
+title: Who am I?
+featured_image: /assets/images/covers/4.jpg
 ---
+I'm a people-focused, technical lead with over 15 years of experience in Web design and development, over 10 years in software engineering, and over 5 years in large-scale engineering, technical leadership and education.
 
-Daniel Bennett is a senior developer from Vilnius, Lithuania. After graduating from The College with a degree in **Computer Science**, he worked for three small web shops where he honed his development skills and love for JavaScript.
+## What I do
 
-His work has been recognized by Communication Arts, IBM, How, ID, IdN, AIGA, Effie, Archive, Graphis, AdFed and Rockport. **Net** magazine named him a person to watch in 2018.
+I specialize in technical leadership and education, and Web app and platform design and development. My background is in JavaScript and all native Web technologies. I am driven by solving complex problems at large scales as well as empowering teams through collaborative leadership, education and mentoring.
 
->The world always seems brighter when you’ve just made something that wasn’t there before. <cite>Neil Gaiman</cite>
+## How I do it
 
-As a hobby, Daniel authors the most influential JavaScript blog in Lithuania with over 100,000 page views a month. He lives in Vilnius with his beautiful wife, two boys and one girl.
+I accomplish the above through a strong, people philosophy and clear technical vision. For people, my focus is on three foundational elements: 1) build a complimentary, diverse team, 2) empower each individual for success, and 3) continual improvement through iteration.
 
-*Thank You for reading!*
+The technical philosophy is also focused on three foundational things: 1) document an explicit, goal-driven process, 2) focus on functional, (test-centric) composition, and 3) adhere to a "designed to evolve" architecture.
+
+## Why I do it
+
+I find tremendous joy in building highly effective, collaborative, empowered teams. From the users to the team to the community, I focus heavily on diversity, inclusion, education and trust. I strongly believe technology is intrinsically linked to the very people and culture that build it. So, it is incumbent on us to ensure we don't lose sight of the importance of each other in our endeavors to build our best technology.

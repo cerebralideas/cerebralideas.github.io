@@ -1,41 +1,43 @@
 # Site setings
-name: 'Subtle'
-description: 'Subtle is a simple & elegant Jekyll theme for coders, writers and bloggers. Explore it yourself.'
-meta_description: 'Jekyll template, minimal style, perfect for bloggers.'
-greetings: 'Hello & Welcome to Subtle'
+title: 'Cerebral Ideas'
+name: 'Cerebral Ideas'
+description: 'A software engineering & architecture blog for documenting complex concepts and ideas for all to read, few to appreciate'
+meta_description: 'Software engineering & architecture, system design, web application, JavaScript'
+greetings: 'Welcome to Cerebral Ideas'
 logo:
 favicon: 'assets/images/favicon.ico'
-baseurl: 
-production_url: https://subtle.netlify.com/
-disqus: 'justgoodthemes'
-mailchimp_url: '//justgoodthemes.us3.list-manage.com/subscribe/post?u=78f1bab16028354caeb23aecd&amp;id=4a7330d117'
+baseurl:
+production_url: https://cerebralideas.github.io/
+# disqus: 'justgoodthemes'
+# mailchimp_url: '//justgoodthemes.us3.list-manage.com/subscribe/post?u=78f1bab16028354caeb23aecd&amp;id=4a7330d117'
 cover_image: covers/6.jpeg
+
 # Add your GA Tracking Id
-ga_analytics: 
+ga_analytics:
 
 # Contact form setings
-email: youremail@email.com
-contact_page_description: "Horace theme comes with a contact form built-in. You can use this form with Formspree service and get up to 50 submissions for free. Also, you can easily switch to another service if you want."
+email: mleapyoq
+contact_page_description: "Have a question? React out!"
 thankyou_page_description: "Your message has been successfully sent. We will contact you very soon!"
 
 # Social links
-twitter: 'username'
-facebook: 'username'
-github: 'username'
-codepen: 'username'
-dribbble: 'username'
-medium: '@username'
-instagram: 'username'
-pinterest: 'username'
-linkedin: 'username'
-producthunt: '@username'
+github: 'cerebrl'
+linkedin: 'cerebrl'
+# twitter: 'username'
+# facebook: 'username'
+# codepen: 'username'
+# dribbble: 'username'
+# medium: '@username'
+# instagram: 'username'
+# pinterest: 'username'
+# producthunt: '@username'
 
 # Navigation
 navigation:
-  - text: About
+  - text: Who am I?
     url: /about
-  - text: Style Guide
-    url: /style-guide
+#  - text: Style Guide
+#    url: /style-guide
   - text: Contact Me
     url: /contact
 
