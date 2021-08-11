@@ -34,6 +34,8 @@ linkedin: 'cerebrl'
 
 # Navigation
 navigation:
+  - text: Home
+    url: /
   - text: Who am I?
     url: /about
 #  - text: Style Guide
