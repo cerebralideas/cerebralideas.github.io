@@ -40,7 +40,7 @@
 	display: table-cell;
 	position: relative;
 	vertical-align: middle;
-	width: 100%;	
+	width: 100%;
 }
 
 .hero .cover-content,
@@ -114,18 +114,21 @@
 	height: 11px;
 	left: -36px;
 	position: absolute;
-	top: 27px;
+	top: 2rem;
 	width: 11px;
 }
 
 .tag-links {
-	color: $gray;
 	font-family: $font-secondary;
 	font-size: 14px;
 }
 
 .tag-links a {
+	background-color: $gray-lightest;
+	border-radius: 0.1rem;
 	color: $color-accent;
+	display: inline-block;
+	padding: 0.1rem 0.33rem;
 	margin-right: 1%;
 }
 
@@ -135,11 +138,6 @@
 
 .tag-links a:hover {
 	color: $gray;
-}
-
-.post-title {
-	font-size: 36px;
-	margin-bottom: 15px;
 }
 
 .post-title a {
@@ -192,12 +190,15 @@
 }
 
 .post-content h1,
-.post-content h2,
+.post-content h2 {
+	margin-top: 2.66rem;
+}
+
 .post-content h3,
 .post-content h4,
 .post-content h5,
 .post-content h6 {
-	margin-top: 45px;
+	margin-top: 1.33rem;
 }
 
 .post-content > h1:first-child,
@@ -215,9 +216,10 @@
 	margin-bottom: 60px;
 }
 
-.post-template .tag-links,
-.page-template .tag-links {
-	color: $gray-lighter;
+.post-template .tag-links a,
+.page-template .tag-links a {
+	color: $color-accent-lighter;
+	background-color: rgba(0, 0, 0, 0.25);
 	font-size: 20px;
 	margin-bottom: 20px;
 }
@@ -225,14 +227,15 @@
 .post-template .tag-links a:hover,
 .page-template .tag-links a:hover {
 	color: $gray-lighter;
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .post-template .post-title,
 .page-template .post-title {
 	color: #fff;
-	font-size: 48px;
-	margin-bottom: 30px;
-	padding-bottom: 30px;
+	font-size: 2.6458rem;
+	margin-bottom: 1.33rem;
+	padding-bottom: 1.33rem;
 	position: relative;
 }
 
@@ -255,8 +258,8 @@
 
 .post-template .post-meta a,
 .page-template .post-meta a {
-	border-color: $color-accent;
-	color: $color-accent;
+	border-color: $color-accent-lighter;
+	color: $color-accent-lighter;
 }
 
 .post-template .post-meta a:hover,
@@ -367,11 +370,19 @@
 	color: $gray-lighter;
 }
 
+code.highlighter-rouge {
+	background-color: $off-white;
+}
+
+a > .highlighter-rouge {
+	color: inherit;
+}
+
 /* Home page */
 .hero-title {
 	color: #fff;
-	font-size: 48px;
-	padding-bottom: 30px;
+	font-style: normal;
+	padding-bottom: 1.33rem;
 	position: relative;
 }
 
@@ -537,9 +548,9 @@
 
 .pagination a:before,
 .pagination a:after {
-	-webkit-transition: all .3s;
-	-moz-transition:	all .3s;
-	transition:			all .3s;
+	-webkit-transition: background-color .3s;
+	-moz-transition:	background-color .3s;
+	transition:			background-color .3s;
 }
 
 .pagination a:hover:before,
@@ -601,9 +612,9 @@
 	-webkit-transform: 	scale(1, 1);
 	-moz-transform: 	scale(1, 1);
 	transform: 			scale(1, 1);
-	-webkit-transition: all 1s;
-	-moz-transition: 	all 1s;
-	transition:			all 1s;
+	-webkit-transition: transform 1s;
+	-moz-transition: 	transform 1s;
+	transition:			transform 1s;
 }
 
 .post-navigation a:hover {

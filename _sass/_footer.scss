@@ -34,9 +34,9 @@
 .site-footer .arrow-up:before,
 .site-footer .arrow-up:after {
 	background-color: $gray;
-	-webkit-transition: all .3s;
-	-moz-transition:	all .3s;
-	transition:			all .3s;
+	-webkit-transition: background-color .3s;
+	-moz-transition:	background-color .3s;
+	transition:			background-color .3s;
 }
 
 .site-footer .arrow-up:hover:before,
