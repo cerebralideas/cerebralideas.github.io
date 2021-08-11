@@ -42,6 +42,7 @@
                     <a href="#" class="arrow-down">
                         <span class="screen-reader-text">Scroll Down</span>
                     </a>
+                    {% if site.mailchimp_url %}
                     <a href="{{ site.mailchimp_url }}" class="subscribe button">Subscribe
                         <span aria-hidden="true">
                             <span class="line left"></span>
@@ -50,6 +51,7 @@
                             <span class="line bottom"></span>
                         </span>
                     </a>
+                    {% endif %}
                 </div><!-- .inner -->
             </div><!-- .cover-content -->
 
