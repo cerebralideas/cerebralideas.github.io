@@ -13,16 +13,16 @@ textarea {
 
 body {
 	background-color: #fff;
-	color: $gray;
+	color: $gray-dark;
 	line-height: 1.66667;
 }
 
 a {
 	color: $color-accent;
 	text-decoration: none;
-	-webkit-transition: all .3s;
-	-moz-transition:    all .3s;
-	transition:         all .3s;
+	-webkit-transition: color 0.3s, background-color 0.3s;
+	-moz-transition:    color 0.3s, background-color 0.3s;
+	transition:         color 0.3s, background-color 0.3s;
 }
 
 a:hover {
@@ -35,41 +35,50 @@ h3,
 h4,
 h5,
 h6 {
-	color: $black;
+	color: $gray-dark;
 	font-family: $font-secondary;
 	font-weight: normal;
-	line-height: 1.33333;
+	line-height: 1.33em;
+	margin: 0 0 1.33rem;
 	text-rendering: optimizeLegibility;
 }
 
 h1 {
-	font-size: 36px;
-	margin: 0 0 30px;
+	color: $gray;
+	font-size: 5.2917rem;
 }
 
 h2 {
-	font-size: 30px;
-	margin: 0 0 30px;
+	color: $gray;
+	font-size: 2.6458rem;
+	font-style: italic;
 }
 
 h3 {
-	font-size: 24px;
-	margin: 0 0 30px;
+	font-size: 1.75rem;
+}
+
+h4,
+h5,
+h6 {
+	font-family: $font-primary;
 }
 
 h4 {
-	font-size: 20px;
-	margin: 0 0 30px;
+	font-size: 1rem;
+	font-weight: 700;
+	text-transform: uppercase;
 }
 
 h5,
 h6 {
-	font-size: 18px;
-	margin: 0 0 30px;
+	font-size: 1rem;
+	font-weight: 700;
+	font-style: italic;
 }
 
 p {
-	margin: 0 0 30px;
+	margin: 0 0 1.33rem;
 }
 
 address {
@@ -91,7 +100,7 @@ ins {
 
 code,
 pre {
-	font-size: 16px;
+	font-size: 0.9em;
 }
 
 code {
@@ -100,8 +109,8 @@ code {
 }
 
 pre {
-	background-color: 0;
 	border: solid 1px $gray-lighter;
+	border-radius: 0.1rem;
 	color: $gray;
 	font-size: 16px;
 	margin: 0 0 30px;
@@ -116,10 +125,10 @@ pre code {
 }
 
 blockquote {
-	color: $black;
+	color: $gray-dark;
 	font: italic 30px/1.33333 $font-secondary;
-	margin: 0 0 30px;
-	padding: 20px 0 30px;
+	margin: 2.66rem 0;
+	padding: 2.66rem 0;
 	position: relative;
 	text-align: center;
 }
@@ -222,25 +231,26 @@ button,
 input,
 select,
 textarea {
-	background-color: #fff;
+	background-color: none;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing:    border-box;
 	box-sizing:         border-box;
 	border: 1px solid $gray-lighter;
-	border-radius: 0;
+	border-radius: 0.1rem;
 	color: $gray;
 	font-size: 16px;
 	max-width: 100%;
-	padding: 8px 10px;
-	-webkit-transition: all 0.3s;
-	-moz-transition:    all 0.3s;
-	transition:         all 0.3s;
+	line-height: 2.66rem;
+	padding: 0 0.66rem;
+	-webkit-transition: border 0.3s, background-color 0.3s, color 0.3s;
+	-moz-transition:    border 0.3s, background-color 0.3s, color 0.3s;
+	transition:         border 0.3s, background-color 0.3s, color 0.3s;
 	vertical-align: baseline;
 }
 
 input[type=email], input[type=password], input[type=search], input[type=text], input[type=url], select, textarea {
-    display: block;
-    width: 100%;
+	display: block;
+	width: 100%;
 }
 
 input[type="text"]:focus,
@@ -424,7 +434,7 @@ video {
 code[class*="language-"],
 pre[class*="language-"] {
   color: $gray;
-  background: 0;
+  background-color: lighten($off-white, 2%);
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
   text-align: left;
   white-space: pre;
@@ -587,6 +597,7 @@ pre[class*="language-"] {
 /* Buttons */
 .button {
 	color: $color-accent;
+	border: none;
 	display: inline-block;
 	font-size: 12px;
 	letter-spacing: 2px;
@@ -637,9 +648,9 @@ pre[class*="language-"] {
 	background-color: $gray;
 	content: "";
 	position: absolute;
-	-webkit-transition: all .4s;
-	-moz-transition:    all .4s;
-	transition:         all .4s;
+	-webkit-transition: height 0.4s, width 0.4s;
+	-moz-transition:    height 0.4s, width 0.4s;
+	transition:         height 0.4s, width 0.4s;
 }
 
 .button .left:before,

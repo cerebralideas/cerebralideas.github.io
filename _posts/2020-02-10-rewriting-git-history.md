@@ -2,6 +2,7 @@
 layout: post
 title: 'Rewriting Git History'
 tags: [Git, Quick Explainer]
+featured_image: assets/images/posts/2020/octocat-roman-synkevych-unsplash.webp
 author: justin
 ---
 
