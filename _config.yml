@@ -2,7 +2,7 @@
 title: 'Cerebral Ideas'
 name: 'Cerebral Ideas'
 description: 'A blog covering a variety of subjects loosely related to software engineering, architecture & technical leadership'
-meta_description: 'Software engineering & architecture, system design, web application, JavaScript'
+meta_description: 'Software engineering & architecture, system design, web application, JavaScript, diversity & inclusion, culture'
 greetings: 'Welcome to Cerebral Ideas'
 logo:
 icon_white: 'assets/images/inari-white.png'
@@ -18,18 +18,17 @@ cover_image: 'covers/6.jpeg'
 ga_analytics:
 
 # Contact form setings
-# email below is ID from email service
-email: 'mleapyoq'
-contact_page_description: 'Have a question? React out!'
-thankyou_page_description: 'Your message has been successfully sent. We will contact you very soon!'
+email: mleapyoq
+contact_page_description: "Have a question? React out, but be patient!"
+thankyou_page_description: "Your message has been successfully sent. We will contact you very soon!"
 
 # Social links
 github: 'cerebrl'
 linkedin: 'cerebrl'
-# twitter: 'username'
+twitter: 'cerebralideas'
 # facebook: 'username'
 # codepen: 'username'
-# dribbble: 'username'
+dribbble: 'cerebralideas'
 # medium: '@username'
 # instagram: 'username'
 # pinterest: 'username'
@@ -41,8 +40,10 @@ navigation:
     url: /
   - text: Who am I?
     url: /about
-  #  - text: Style Guide
-  #    url: /style-guide
+  - text: Standards of Excellence
+    url: /standards
+#  - text: Style Guide
+#    url: /style-guide
   - text: Contact Me
     url: /contact
 
