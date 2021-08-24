@@ -1,6 +1,6 @@
 <header class="site-header">
 
-    {% if site.logo != null %}
+    {% if page.url == "/" %}
     <p class="site-logo">
         <a href="{{ site.baseurl }}/" rel="home">
             <img src="{{ site.baseurl }}/{{ site.logo }}" alt="{{ site.name }}" />
@@ -14,8 +14,8 @@
     {% endif %}
 
     <a class="sidebar-toggle">
-        <span class="screen-reader-text">Menu and Widgets</span>
         <span class="icon" aria-hidden="true"></span>
+        <span class="label">Menu</span>
     </a>
 
 </header><!-- .site-header -->

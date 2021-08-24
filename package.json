@@ -1,0 +1,22 @@
+{
+  "name": "cerebralideas.github.io",
+  "version": "1.0.0",
+  "description": "A simple blog; built with Jekyll; design by Just Good Themes; written by me.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cerebralideas/cerebralideas.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cerebralideas/cerebralideas.github.io/issues"
+  },
+  "homepage": "https://github.com/cerebralideas/cerebralideas.github.io#readme",
+  "devDependencies": {
+    "markdown-toc": "^1.2.0"
+  }
+}
