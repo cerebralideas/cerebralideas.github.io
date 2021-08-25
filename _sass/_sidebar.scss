@@ -92,7 +92,7 @@
 	height: 1px;
 	left: 0;
 	position: absolute;
-	top: 50%;
+	top: 100%;
 	-webkit-transition:	width 0.3s;
 	-moz-transition: 	width 0.3s;
 	transition: 		width 0.3s;
@@ -130,10 +130,15 @@
 }
 
 .sidebar-toggle {
+	color: $color-accent-lighter;
 	cursor: pointer;
-	height: 30px;
+	height: 35px;
 	position: absolute;
-	width: 30px;
+	width: 35px;
+
+	&:hover {
+		color: $color-accent-lighter;
+	}
 }
 
 .site-header .sidebar-toggle {
@@ -201,4 +206,13 @@
 	-webkit-transform:	rotate(-45deg);
 	-moz-transform:		rotate(-45deg);
 	transform: 			rotate(-45deg);
+}
+
+.sidebar-toggle .label {
+	display: block;
+	font-size: 0.75rem;
+	margin-left: -0.3rem;
+	margin-top: 100%;
+	text-align: center;
+	text-transform: uppercase;
 }
