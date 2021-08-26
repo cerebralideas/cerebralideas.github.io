@@ -1,10 +1,10 @@
 # Site setings
 title: 'Cerebral Ideas'
 name: 'Cerebral Ideas'
-description: 'A blog covering a variety of subjects loosely related to software engineering & technical leadership'
+description: 'A blog covering a variety of subjects loosely related to software engineering, architecture & technical leadership'
 meta_description: 'Software engineering & architecture, system design, web application, JavaScript'
 greetings: 'Welcome to Cerebral Ideas'
-logo: 'assets/images/inari-white-small.png'
+logo:
 icon_white: 'assets/images/inari-white.png'
 icon_gray: 'assets/images/inari-gray.png'
 favicon: 'assets/images/favicon.ico'
@@ -58,7 +58,7 @@ paginate: 7
 paginate_path: /page:num/
 
 # Permalinks
-permalink: /:title
+permalink: /blog/:title
 
 # Other
 markdown: kramdown

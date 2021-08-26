@@ -3,7 +3,7 @@ layout: post
 title: 'Universal Application Design with React, Rx and Redux'
 tags: [Architecture, React, Reactive Programming, Platform, Video]
 author: justin
-featured_image: assets/images/posts/2017/universality.jpg
+featured_image: /assets/images/posts/2017/universality.jpg
 ---
 
 Presentation at EnterpriseJS in Austin Texas explaining how we built the PayPal Wallet Platform, a universal (isomorphic) application.

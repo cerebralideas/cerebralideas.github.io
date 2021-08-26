@@ -6,9 +6,8 @@
 .site-footer {
 	background-color: $black;
 	border-top: 1px solid rgba(90, 90, 90, 0.3);
-	margin-top: 5rem;
 	padding-bottom: 60px;
-	padding-top: 90px;
+	padding-top: 80px;
 	text-align: center;
 }
 
@@ -21,15 +20,26 @@
 }
 
 .site-info {
-	color: $gray;
-	font-size: 10px;
+	color: $gray-light;
+	font-size: 0.6rem;
 	letter-spacing: 2px;
 	margin-bottom: 45px;
 	text-transform: uppercase;
 }
 
+.footer-copyright {
+	border-bottom: 1px solid $gray;
+	font-size: 0.8rem;
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+}
+
 .site-info a:hover {
 	color: $gray-light;
+}
+
+.footer-icon {
+	margin-bottom: 2rem;
 }
 
 .site-footer .arrow-up:before,

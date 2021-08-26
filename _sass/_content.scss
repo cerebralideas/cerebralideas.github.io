@@ -78,6 +78,10 @@
 	margin-bottom: 90px;
 }
 
+.page-template {
+	margin-bottom: 5rem;
+}
+
 .post-template .post,
 .page-template .post {
 	margin-bottom: 60px;
@@ -379,14 +383,9 @@ a > .highlighter-rouge {
 }
 
 /* Home page */
-.hero-icon {
-	height: 200px;
-	margin-top: -100px;
-}
-
 .hero-title {
 	color: #fff;
-	font-style: normal;
+	font-weight: 700;
 	padding-bottom: 1.33rem;
 	position: relative;
 }
