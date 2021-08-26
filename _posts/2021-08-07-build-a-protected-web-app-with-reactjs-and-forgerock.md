@@ -2,7 +2,7 @@
 layout: post
 title: 'Build a Protected Web App with React JS'
 tags: [Tutorial, React, ForgeRock, OAuth, Authentication]
-featured_image: assets/images/posts/2021/forgerock+react.jpg
+featured_image: /assets/images/posts/2021/forgerock+react.jpg
 author: justin
 ---
 

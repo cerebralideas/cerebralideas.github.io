@@ -1,12 +1,16 @@
 <footer class="site-footer">
   <div class="inner">
+    <img class="footer-icon" src="{{ site.baseurl }}/assets/images/inari-white-small.png" />
     {% include social-links.html %}
     <div class="site-info">
-      <a href="#">{{ site.name }}</a> &copy; {{ site.time | date: '%Y' }} |
+      <p class="footer-copyright">
+        <a href="#">{{ site.name }}</a> &copy; {{ site.time | date: '%Y' }}
+      </p>
       Lightly modified version of a theme by
       <a target="_blank" href="https://justgoodthemes.com/">JustGoodThemes</a>
       <br />
-      Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a>
+      Powered by <a target="_blank" href="https://jekyllrb.com/">Jekyll</a> |
+      Photography by <a href="https://unsplash.com/">Unsplash</a> or me
     </div>
     <!-- .site-info -->
 
