@@ -171,7 +171,7 @@ If you are using ForgeRock’s AM, click on **Identities** item in the left navi
 
 First, clone the [to-do app project](https://github.com/cerebrl/forgerock-sample-web-react) to your local computer, `cd` (change directory) into the project folder, checkout the branch for this guide, and install the needed dependencies:
 
-```sh
+```bash
 git clone <repo>
 cd <directory>
 git checkout blog/build-protected-app/start
@@ -197,7 +197,7 @@ _Ensure these two files are in the root of this project._
 
 Edit your `hosts` file to point special domains to your `localhost` . If you’re on a Mac, the file can be found here: `/etc/hosts`. If you are on Windows, it will be found here (or similar): `System32\Drivers\etc\hosts`. Open the file as an administrator or as `sudo`, and add the following line:
 
-```
+```text
 127.0.0.1 react.example.com api.example.com
 ```
 
@@ -209,7 +209,7 @@ This file provides all the important configuration values to the system. We prov
 
 Here’s a hypothetical example:
 
-```
+```text
 AM_URL=https://auth.forgerock.com/am
 APP_URL=https://react.example.com:8443
 API_URL=https://api.example.com:9443
@@ -237,7 +237,7 @@ Here are descriptions for some of the values:
 
 Now that everything is setup, build and run the to-do app project. Open two terminal windows and use the following commands:
 
-```sh
+```bash
 # In one terminal window
 npm run watch
 
@@ -273,33 +273,51 @@ Now that we have our environment and servers setup, let’s jump into the applic
 
 First, open up the `index.js` file, import the `Config` object from the JavaScript SDK and call the `set` method on this object:
 
-```js
-// NOTE: The ForgeRock SDK is already installed as a dependency
-import { Config } from '@forgerock/javascript-sdk';
-// ... rest of imports
+```diff-jsx
++ // NOTE: ForgeRock SDK is already installed as a dependency
++ import { Config } from '@forgerock/javascript-sdk';
+  import React from 'react';
+  import ReactDOM from 'react-dom';
 
-Config.set();
+@@ collapsed @@
 
-// rest of application code ...
++ Config.set();
+
+  /**
+  * Initialize the React application
+  * This is an IIFE (Immediately Invoked Function Expression),
+  * so it calls itself.
+  */
+  (async function initAndHydrate() {
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 The use of `set` should always be the first SDK method called and is frequently done at the application’s top-level file. To configure the SDK to communicate with the journeys, OAuth clients, and realms of the appropriate ForgeRock server, pass a configuration object with the appropriate values.
 
 The configuration object you will use in this instance will pull most of its values out of the `.env` variables previously setup, which are mapped to constants within our `constants.js` file:
 
-```js
-Config.set({
-  clientId: WEB_OAUTH_CLIENT,
-  redirectUri: `${APP_URL}/callback`,
-  scope: 'openid profile email',
-  serverConfig: {
-    baseUrl: AM_URL,
-    timeout: '5000',
-  },
-  realmPath: REALM_PATH,
-  tree: JOURNEY_LOGIN,
-});
+```diff-jsx
+@@ collapsed @@
+
+  Config.set(
++   {
++     clientId: WEB_OAUTH_CLIENT,
++     redirectUri: `${APP_URL}/callback`,
++     scope: 'openid profile email',
++     serverConfig: {
++       baseUrl: AM_URL,
++       timeout: '5000',
++     },
++     realmPath: REALM_PATH,
++     tree: JOURNEY_LOGIN,
++   }
+  );
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Go back to your browser and refresh the home page. There should be no change to what’s rendered, and no errors in the console. Now that the app is configured to your ForgeRock server, let’s wire up the simple login page!
 
@@ -319,36 +337,44 @@ Navigate to the app’s login page within your browser. You should see a "loadin
 
 Since most of the action is taking place in `components/journey/form.js`, open it and add the JavaScript SDK import:
 
-```js
-import { FRAuth } from '@forgerock/javascript-sdk';
+```diff-jsx
++ import { FRAuth } from '@forgerock/javascript-sdk';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 `FRAuth` is the first object used as it provides the necessary methods for authenticating a user against the Login **Journey**/**Tree**. Use the `start` method of `FRAuth` as it returns data we need for rendering the form.
 
 You will need to add two new imports from the React package: `useState` and `useEffect`. You'll use the `useState` method for managing the data received from the ForgeRock server, and the `useEffect` is needed due to the `FRAuth.start` method resulting in a network request.
 
-```js
-import React, { useEffect, useState } from 'react';
-// other imports ...
+```diff-jsx
+  import { FRAuth } from '@forgerock/javascript-sdk';
+- import React from 'react';
++ import React, { useEffect, useState } from 'react';
 
-// .. Login function
-const [step, setStep] = useState(null);
+  import Loading from '../utilities/loading';
 
-useEffect(() => {
-  async function getStep() {
-    try {
-      const initialStep = await FRAuth.start();
-      console.log(initialStep);
-      setStep(initialStep);
-    } catch (err) {
-      console.error(`Error: request for initial step; ${err}`);
-    }
+  export default function Form() {
++   const [step, setStep] = useState(null);
+
++   useEffect(() => {
++     async function getStep() {
++       try {
++         const initialStep = await FRAuth.start();
++         console.log(initialStep);
++         setStep(initialStep);
++       } catch (err) {
++         console.error(`Error: request for initial step; ${err}`);
++       }
++     }
++     getStep();
++   }, []);
+
+    return <Loading message="Checking your session ..." />;
   }
-  getStep();
-}, []);
-
-// return statement ...
 ```
+{: .diff-highlight}
 
 NOTE: We are passing an empty array as the second argument into `useEffect`. This instructs the `useEffect` to only run once after the component mounts. This is functionally equivalent to a [class component using `componentDidMount` to run an asynchronous method after the component mounts](https://reactjs.org/docs/react-component.html#componentdidmount).
 
@@ -363,51 +389,68 @@ The below is a summary of what you'll do to get the form to react to the new cal
 
 First, import the `Password`, `Text` and `Unknown` components.
 
-```js
-// other imports ...
+```diff-jsx
+  import { FRAuth } from '@forgerock/javascript-sdk';
+  import React, { useEffect, useState } from 'react';
 
-import Alert from './alert';
-import Password from './password';
-import Text from './text';
-import Unknown from './unknown';
+  import Loading from '../utilities/loading';
++ import Alert from './alert';
++ import Password from './password';
++ import Text from './text';
++ import Unknown from './unknown';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
-Next, within the `Login` function body, create the function that maps these imported components to their appropriate callback.
+Next, within the `Form` function body, create the function that maps these imported components to their appropriate callback.
 
-```js
-// within Login's function body ...
-function mapCallbacksToComponents(cb, idx) {
-  const name = cb?.payload?.input?.[0].name;
-  switch (cb.getType()) {
-    case 'NameCallback':
-      return <Text callback={cb} inputName={name} key='username' />;
-    case 'PasswordCallback':
-      return <Password callback={cb} inputName={name} key='password' />;
-    default:
-      // If current callback is not supported, render a warning message
-      return <Unknown callback={cb} key={`unknown-${idx}`} />;
+```diff-jsx
+@@ collapsed @@
+
+  export default function Form() {
+    const [step, setStep] = useState(null);
+
+@@ collapsed @@
+
++   function mapCallbacksToComponents(cb, idx) {
++     const name = cb?.payload?.input?.[0].name;
++     switch (cb.getType()) {
++       case 'NameCallback':
++         return <Text callback={cb} inputName={name} key='username' />;
++       case 'PasswordCallback':
++         return <Password callback={cb} inputName={name} key='password' />;
++       default:
++         // If current callback is not supported, render a warning message
++         return <Unknown callback={cb} key={`unknown-${idx}`} />;
++     }
++   }
+    return <Loading message="Checking your session ..." />;
   }
-}
 ```
+{: .diff-highlight}
 
 Finally, check for the presence of the `step.callbacks`, and if they exist, map over them with the function from above. Replace the single return of `<Loading message="Checking your session ..." />` with the following:
 
-```js
-if (!step) {
-  return <Loading message='Checking your session ...' />;
-} else if (step.callbacks?.length) {
-  return (
-    <form className='cstm_form'>
-      {step.callbacks.map(mapCallbacksToComponents)}
-      <button className='btn btn-primary w-100' type='submit'>
-        Sign In
-      </button>
-    </form>
-  );
-} else {
-  return <Alert message={step.payload.message} />;
-}
+```diff-jsx
+@@ collapsed @@
+
++   if (!step) {
+      return <Loading message='Checking your session ...' />;
++   } else if (step.type === 'Step') {
++     return (
++       <form className='cstm_form'>
++         {step.callbacks.map(mapCallbacksToComponents)}
++         <button className='btn btn-primary w-100' type='submit'>
++           Sign In
++         </button>
++       </form>
++     );
++   } else {
++     return <Alert message={step.payload.message} />;
+  }
 ```
+{: .diff-highlight}
 
 Refresh the page, and you should now have a dynamic form that reacts to the callbacks returned from our initial call to ForgeRock.
 
@@ -417,27 +460,28 @@ Refresh the page, and you should now have a dynamic form that reacts to the call
 
 Since a form that can’t submit anything isn't very useful, we'll now handle the submission of the user input values to ForgeRock. First, let’s edit the current form element, `<form className="cstm_form">`, and add an `onSubmit` handler with a simple, inline function.
 
-```js
-<form
-  className="cstm_form"
-  onSubmit={(event) => {
-    event.preventDefault();
-    async function getStep() {
-      try {
-        const nextStep = await FRAuth.next(step);
-        if (nextStep.type === 'LoginSuccess') {
-          setAuthentication(true);
-        }
-        console.log(nextStep);
-        setStep(nextStep);
-      } catch (err) {
-        console.error(`Error: form submission; ${err}`);
-      }
-    }
-    getStep();
-  }}
->
+```diff-jsx
+@@ collapsed @@
+
+- <form className='cstm_form'>
++ <form
++   className="cstm_form"
++   onSubmit={(event) => {
++     event.preventDefault();
++     async function getStep() {
++       try {
++         const nextStep = await FRAuth.next(step);
++         console.log(nextStep);
++         setStep(nextStep);
++       } catch (err) {
++         console.error(`Error: form submission; ${err}`);
++       }
++     }
++     getStep();
++   }}
++ >
 ```
+{: .diff-highlight}
 
 Refresh the login page and use the test user to login. You will get a mostly blank login page if the user's credentials are valid and the journey completes. You can verify this by going to the Network panel within the developer tools and inspect the last `/authenticate` request. It should have a `tokenId` and `successUrl` property.
 
@@ -445,31 +489,34 @@ Refresh the login page and use the test user to login. You will get a mostly bla
 
 You may ask, “How did the user’s input values get added to the `step` object?” Let’s take a look at the component for rendering the username input. Open up the `Text` component: `components/journey/text.js`. Notice how special methods are being used on the callback object. These are provided as convenience methods by the SDK for getting and setting data.
 
-```js
-export default function Text({ callback, inputName }) {
-  const [state] = useContext(AppContext);
-  const existingValue = callback.getInputValue();
+```diff-jsx
+@@ collapsed @@
 
-  const textInputLabel = callback.getPrompt();
-  function setValue(event) {
-    callback.setInputValue(event.target.value);
+  export default function Text({ callback, inputName }) {
+    const [state] = useContext(AppContext);
+    const existingValue = callback.getInputValue();
+
+    const textInputLabel = callback.getPrompt();
+    function setValue(event) {
+      callback.setInputValue(event.target.value);
+    }
+
+    return (
+      <div className={`cstm_form-floating form-floating mb-3`}>
+        <input
+          className={`cstm_form-control form-control ${validationClass} bg-transparent ${state.theme.textClass} ${state.theme.borderClass}`}
+          defaultValue={existingValue}
+          id={inputName}
+          name={inputName}
+          onChange={setValue}
+          placeholder={textInputLabel}
+        />
+        <label htmlFor={inputName}>{textInputLabel}</label>
+      </div>
+    );
   }
-
-  return (
-    <div className={`cstm_form-floating form-floating mb-3`}>
-      <input
-        className={`cstm_form-control form-control ${validationClass} bg-transparent ${state.theme.textClass} ${state.theme.borderClass}`}
-        defaultValue={existingValue}
-        id={inputName}
-        name={inputName}
-        onChange={setValue}
-        placeholder={textInputLabel}
-      />
-      <label htmlFor={inputName}>{textInputLabel}</label>
-    </div>
-  );
-}
 ```
+{: .diff-highlight}
 
 The two important items to focus on are the `callback.getInputValue()` and the `callback.setInputValue()`. The `getInputValue` retrieves any existing value that may be provided by ForgeRock, and the `setInputValue` sets the user’s input on the callback while they are typing (i.e. `onChange`). Since the `callback` is passed from the `Form` to the components by “reference” (not by “value”), any mutation of the `callback` object within the `Text` (or `Password`) component is also contained within the `step` object in `Form`.
 
@@ -479,17 +526,18 @@ Each callback type has its own collection of methods for getting and setting dat
 
 Now that the form is rendering and submitting, add conditions to the `Form` component for handling the success and error response from ForgeRock. This condition handles the success result of the authentication journey.
 
-```js
-if (!step) {
-  // Loading ...
-} else if (step.type === 'LoginSuccess') {
-  return <Alert message="Success! You're logged in." type='success' />;
-} else if (step.type === 'Step') {
-  // Form rendering
-} else {
-  // Error message
-}
+```diff-jsx
+@@ collapsed @@
+
+  if (!step) {
+    return <Loading message='Checking your session ...' />;
++ } else if (step.type === 'LoginSuccess') {
++   return <Alert message="Success! You're logged in." type='success' />;
+  } else if (step.type === 'Step') {
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Once you handle the success and error condition, return back to the browser and [remove all cookies created from any previous logins](https://developer.chrome.com/docs/devtools/storage/cookies/). Refresh the page and login with your test user created in the Setup section above. You should see a “Success!” alert message. Congratulations, you are now able to authenticate users!
 
@@ -501,48 +549,82 @@ At this point, the user is authenticated. The session has been created and a ses
 
 The goal of this flow is to attain a separate set of tokens, replacing the need for cookies as the shared access artifact. The two common tokens are the Access Token and the ID Token. We will focus on the access token in this guide. The specific flow that the SDK uses to acquire these tokens is called the Authorization Code Flow with PKCE.
 
-To start, import the `TokenManager` object from the ForgeRock SDK.
+To start, import the `TokenManager` object from the ForgeRock SDK into the same `form.js` file.
 
-```js
-import { FRAuth, TokenManager } from '@forgerock/javascript-sdk';
+```diff-jsx
+- import { FRAuth } from '@forgerock/javascript-sdk';
++ import { FRAuth, TokenManager } from '@forgerock/javascript-sdk';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Only an authenticated user that has a valid session can successfully request OAuth/OIDC tokens. Make sure we make this token request after we get a `'LoginSuccess'` back from the authentication journey. This is an asynchronous call to the ForgeRock server. There are multiple ways to handle this, but we’ll use the `useEffect` and `useState` hooks.
 
-Go back to `components/journey/form.js` and add a `useState` to the top of the function body to create a simple boolean flag of the user’s authentication state.
+Add a `useState` to the top of the function body to create a simple boolean flag of the user’s authentication state.
 
-```js
-// ... const [step, setStep] = useState(null);
-const [isAuthenticated, setAuthentication] = useState(false);
+```diff-jsx
+@@ collapsed @@
+
+  export default function Form() {
+    const [step, setStep] = useState(null);
++   const [isAuthenticated, setAuthentication] = useState(false);
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Now, add a new `useEffect` hook to allow us to work with another asynchronous request. Unlike our first `useEffect`, this one will be dependent on the state of `isAuthenticated`. To do this, add `isAuthenticated` to the array passed in as the second argument. This instructs React to run the `useEffect` function when the value of `isAuthenticated` is changed.
 
-```js
-useEffect(() => {
-  async function oauthFlow() {
-    try {
-      const tokens = await TokenManager.getTokens();
-      console.log(tokens);
-    } catch (err) {
-      console.error(`Error: token request; ${err}`);
-    }
-  }
-  if (isAuthenticated) {
-    oauthFlow();
-  }
-}, [isAuthenticated]);
+```diff-jsx
+@@ collapsed @@
+
++ useEffect(() => {
++   async function oauthFlow() {
++     try {
++       const tokens = await TokenManager.getTokens();
++       console.log(tokens);
++     } catch (err) {
++       console.error(`Error: token request; ${err}`);
++     }
++   }
++   if (isAuthenticated) {
++     oauthFlow();
++   }
++ }, [isAuthenticated]);
+
+  @@ collapsed @@
 ```
+{: .diff-highlight}
 
 Finally, we need to conditionally set this authentication flag when we have a success response from our authentication journey. In your `form` element's `onSubmit` handler, add a simple conditional and set the flag to `true`.
 
-```js
-// event.preventDefault();
-// const nextStep = FRAuth.next(step);
-if (nextStep.type === 'LoginSuccess') {
-  setAuthentication(true);
-}
+```diff-jsx
+@@ collapsed @@
+
+  <form
+    className="cstm_form"
+    onSubmit={(event) => {
+      event.preventDefault();
+      async function getStep() {
+        try {
+          const nextStep = await FRAuth.next(step);
++         if (nextStep.type === 'LoginSuccess') {
++           setAuthentication(true);
++         }
+          console.log(nextStep);
+          setStep(nextStep);
+        } catch (err) {
+          console.error(`Error: form submission; ${err}`);
+        }
+      }
+      getStep();
+    }}
+  >
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Once the changes are made, return back to your browser and remove all cookies created from any previous logins. Refresh the page and verify the login form is rendered. If the success message continues to display, make sure “third-party cookies” are also removed.
 
@@ -556,49 +638,72 @@ Now that the user is authenticated and an access token is attained, you can now 
 
 Within the `form.js` file, add the `UserManager` object to our ForgeRock SDK import statement.
 
-```js
-import { FRAuth, TokenManager, UserManager } from '@forgerock/javascript-sdk';
+```diff-jsx
+- import { FRAuth, TokenManager } from '@forgerock/javascript-sdk';
++ import { FRAuth, TokenManager, UserManager } from '@forgerock/javascript-sdk';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 The `getCurrentUser` method on this new object will request the user's data and validate the existing access token. Just after the `TokenManager.getTokens` method call, within the `oauthFlow` function from above, add this new method.
 
-```js
-// try {
-//   const tokens = await TokenManager.getTokens();
-//   console.log(tokens);
-const user = await UserManager.getCurrentUser();
-console.log(user);
+```diff-jsx
+@@ collapsed @@
+
+  try {
+    const tokens = await TokenManager.getTokens();
+    console.log(tokens);
++   const user = await UserManager.getCurrentUser();
++   console.log(user);
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 If the access token is valid, the user information will be logged to the console, just after the tokens. Before we move on from the `form.js` file, set a small portion of this state to the global context for application-wide state access. Add the remaining imports for setting the state and redirecting back to the home page: `useContext`, `AppContext` and `useHistory`.
 
-```js
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+```diff-jsx
+- import React, { useEffect, useState } from 'react';
++ import React, { useContext, useEffect, useState } from 'react';
++ import { useHistory } from 'react-router-dom';
 
-import { AppContext } from '../../global-state';
++ import { AppContext } from '../../global-state';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 At the top of the `Form` function body, use the `useContext` method to get the app’s global `state` and `methods`. Call the `useHistory` method to get the `history` object.
 
-```js
-// Get global methods; `_` indicates it's not used
-const [_, methods] = useContext(AppContext);
-const history = useHistory();
+```diff-jsx
+  export default function Form() {
+    const [step, setStep] = useState(null);
+    const [isAuthenticated, setAuthentication] = useState(false);
++   const [_, methods] = useContext(AppContext);
++   const history = useHistory();
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 After the `UserManager.getCurrentUser()` call, set the new user information to the global state and redirect to the home page.
 
-```js
-// const user = await UserManager.getCurrentUser();
-// console.log(user);
+```diff-jsx
+@@ collapsed @@
 
-methods.setUser(user.name);
-methods.setEmail(user.email);
-methods.setAuthentication(true);
+  const user = await UserManager.getCurrentUser();
+  console.log(user);
 
-history.push('/');
++ methods.setUser(user.name);
++ methods.setEmail(user.email);
++ methods.setAuthentication(true);
+
++ history.push('/');
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Revisit the browser, clear out all cookies, storage and cache, and log in with you test user. If you landed on the home page and the logs in the console show tokens and user data, you have successfully used the access token for retrieving use data. Notice that the home page looks a bit different with an added success alert and message with the user's full name. This is due to the app “reacting” to the global state that we set just before the redirection.
 
@@ -614,26 +719,31 @@ Because the SDK stores the tokens in localStorage, you can use their presence as
 
 To do this, add the `TokenStorage.get` method to the `index.js` file as it will provide what we need to rehydrate the user's authentication status. First, import `TokenStorage` into the file. Use the `TokenStorage.get` method within the `initAndHydrate` function. Second, add these values to the `useGlobalStateMgmt` function call.
 
-```js
-import { Config, TokenStorage } from '@forgerock/javascript-sdk';
+```diff-jsx
+- import { Config } from '@forgerock/javascript-sdk';
++ import { Config, TokenStorage } from '@forgerock/javascript-sdk';
 
-// (async function initAndHydrate() {
-let isAuthenticated;
-try {
-  isAuthenticated = !!(await TokenStorage.get());
-} catch (err) {
-  console.error(`Error: token retrieval for hydration; ${err}`);
-}
-// const email = window.sessionStorage.getItem('sdk_email') ...
+  (async function initAndHydrate() {
++   let isAuthenticated;
++   try {
++     isAuthenticated = !!(await TokenStorage.get());
++   } catch (err) {
++     console.error(`Error: token retrieval for hydration; ${err}`);
++   }
 
-// ... function Init() {
-const stateMgmt = useGlobalStateMgmt({
-  email,
-  isAuthenticated, // <-- add to property
-  prefersDarkTheme,
-  username,
-});
+@@ collapsed @@
+
+  function Init() {
+    const stateMgmt = useGlobalStateMgmt({
+      email,
++     isAuthenticated,
+      prefersDarkTheme,
+      username,
+    });
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 With a global state API available throughout the app, different components can pull this state in and use it to conditionally render one set of UI elements versus another. Navigation elements and the displaying of profile data are good examples of such conditional rendering. Examples of this can be found by reviewing `components/layout/header.js` and `views/home.js`.
 
@@ -645,29 +755,51 @@ You can ensure the token is still valid with the use of `getCurrentUser` method 
 
 To validate a token for protecting a route, open the `router.js` file, import the `ProtectedRoute` module and replace the regular `<Route path="todos">` with the new `ProtectedRoute` wrapper.
 
-```js
-// ... import
-import { ProtectedRoute } from './utilities/route';
+```diff-jsx
+@@ collapsed @@
 
-// ... </Route>
-<ProtectedRoute path='/todos'>
-  <Header />
-  <Todos />
-  <Footer />
-</ProtectedRoute>;
-// <Route> ...
+  import Register from './views/register';
++ import { ProtectedRoute } from './utilities/route';
+  import Todos from './views/todos';
+
+@@ collapsed @@
+
+- <Route>
++ <ProtectedRoute path='/todos'>
+    <Header />
+    <Todos />
+    <Footer />
+- </Route>
++ </ProtectedRoute>;
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Let’s take a look at what this wrapper does. Open `utilities/route.js` file and focus just on the `validateAccessToken` function within the `useEffect` function. Currently, it’s just checking for the existence of the tokens with `TokenStorage.get`, which may be fine for some situations. We can optionally call the `UserManager.getCurrentUser` method to ensure the stored tokens are still valid.
 
 To do this, import `UserManager` into the file, and then replace `TokenStorage.get` with `UserManager.getCurrentUser`.
 
-```js
-import { UserManager } from '@forgerock/javascript-sdk';
+```diff-js
+  import React, { useContext, useEffect, useState } from 'react';
+  import { Route, Redirect } from 'react-router-dom';
+- import { TokenStorage } from '@forgerock/javascript-sdk';
++ import { UserManager } from '@forgerock/javascript-sdk';
 
-// try {
-await UserManager.getCurrentUser();
+@@ collapsed @@
+
+  useEffect(() => {
+    async function validateAccessToken() {
+     if (auth) {
+        try {
+-         await TokenStorage.get();
++         await UserManager.getCurrentUser();
+          setValid('valid');
+        } catch (err) {
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 In the code above, we are reusing the `getCurrentUser` method to validate the token. If it succeeds, we can be sure our token is valid and call `setValid` to `'valid'` . If it fails, we know it is not valid and call `setValid` to `'invalid'`. We set that outcome with our `setValid` state method and the routing will know exactly where to redirect the user.
 
@@ -685,21 +817,28 @@ To make resource requests to an protected endpoint, we have an `HttpClient` modu
 
 Open `utilities/request.js` and import the `HttpClient` from the ForgeRock SDK. Then, replace the native fetch method with the `HttpClient.request` method.
 
-```js
-import { HttpClient } from '@forgerock/javascript-sdk';
+```diff-js
++ import { HttpClient } from '@forgerock/javascript-sdk';
+  import { API_URL, DEBUGGER } from '../constants';
 
-//   try {
-const response = await HttpClient.request({
-  url: `${API_URL}/${resource}`,
-  init: {
-    body: data && JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: method,
-  },
-});
+  export default async function apiRequest(resource, method, data) {
+    let json;
+    try {
+-     const response = await fetch(`${API_URL}/${resource}`, {
++     const response = await HttpClient.request({
++       url: `${API_URL}/${resource}`,
++       init: {
+          body: data && JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: method,
++       },
+      });
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 The `init` object in the above maps directly to the `init` options object seen in the [official `Request` documentation in the Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request). The interface of the response from the request also maps directly to [the official `Response` object seen in the Mozilla Web Doc](https://developer.mozilla.org/en-US/docs/Web/API/Response).
 
@@ -723,40 +862,48 @@ Open up the `views/logout.js` file and import the following:
 3. `useHistory` from React Router
 4. `AppContext` from the global state module.
 
-```js
-import { FRUser } from '@forgerock/javascript-sdk';
-import React, { useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+```diff-js
++ import { FRUser } from '@forgerock/javascript-sdk';
+- import React from 'react';
++ import React, { useContext, useEffect } from 'react';
++ import { useHistory } from 'react-router-dom';
 
-import { AppContext } from '../global-state';
++ import { AppContext } from '../global-state';
+
+@@ collapsed @@
 ```
+{: .diff-highlight}
 
 Since logging out requires a network request, we need to wrap it in a `useEffect` and pass in a callback function with the following functionality:
 
-```js
-// ... function Logout
-const [_, { setAuthentication, setEmail, setUser }] = useContext(AppContext);
-const history = useHistory();
+```diff-js
+@@ collapsed @@
 
-useEffect(() => {
-  async function logout() {
-    try {
-      await FRUser.logout();
+  export default function Logout() {
++   const [_, { setAuthentication, setEmail, setUser }] = useContext(AppContext);
++   const history = useHistory();
 
-      setAuthentication(false);
-      setEmail('');
-      setUser('');
++   useEffect(() => {
++     async function logout() {
++       try {
++         await FRUser.logout();
 
-      history.push('/');
-    } catch (error) {
-      console.error(`Error: logout; ${err}`);
-    }
++         setAuthentication(false);
++         setEmail('');
++         setUser('');
+
++         history.push('/');
++       } catch (error) {
++         console.error(`Error: logout; ${err}`);
++       }
++     }
++     logout();
++   }, []);
+
+    return <Loading classes="pt-5" message="You're being logged out ..." />;
   }
-  logout();
-}, []);
-
-// ... return <Loading
 ```
+{: .diff-highlight}
 
 Since we only want to call this method once, after the component mounts, we will pass in an empty array as a second argument for `useEffect`. After `FRUser.logout` completes, we just empty or falsify the global state to clean up and redirect back to the home page.
 
