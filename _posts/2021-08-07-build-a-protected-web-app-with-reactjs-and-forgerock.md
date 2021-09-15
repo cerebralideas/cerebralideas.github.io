@@ -169,16 +169,16 @@ If you are using ForgeRock’s AM, click on **Identities** item in the left navi
 
 ### Step 1. Installing the project
 
-First, clone the [to-do app project](https://github.com/cerebrl/forgerock-sample-web-react) to your local computer, `cd` (change directory) into the project folder, checkout the branch for this guide, and install the needed dependencies:
+First, clone the [JavaScript SDK project](https://github.com/ForgeRock/forgerock-javascript-sdk) to your local computer, `cd` (change directory) into the project folder, checkout the branch for this guide, and install the needed dependencies:
 
 ```bash
-git clone <repo>
-cd <directory>
+git clone https://github.com/ForgeRock/forgerock-javascript-sdk.git
+cd forgerock-javascript-sdk
 git checkout blog/build-protected-app/start
 npm i
 ```
 
-NOTE: The branch that will be used in this guide will be an overly-simplified version of the sample app you see in the `main` Git branch. There’s also a branch that represents the completion of this guide. If you get stuck, you can visit `blog/build-protected-app/complete` branch in Github.
+NOTE: The branch that will be used in this guide will be an overly-simplified version of the sample app you see in the `master` Git branch. There’s also a branch that represents the completion of this guide. If you get stuck, you can visit `blog/build-protected-app/complete` branch in Github.
 
 ### Step 2. Create your security certificates
 
@@ -205,7 +205,7 @@ This allows for easier operation of the app locally and keeps it consistent with
 
 ### Step 4. Create the `.env` file
 
-This file provides all the important configuration values to the system. We provide an example file found in the root of the project called `.env.example`. Copy this file and rename it to `.env` within the root of your project. Add your relevant values to this new file.
+First, open the `samples/reactjs-todos` directory. Look for the `.env.example` file. Copy this file and name it `.env`. Add your relevant values to this new file as it will provide all the important configuration settings to your applications.
 
 Here’s a hypothetical example:
 
@@ -235,15 +235,17 @@ Here are descriptions for some of the values:
 
 ## Build and run the project
 
-Now that everything is setup, build and run the to-do app project. Open two terminal windows and use the following commands:
+Now that everything is setup, build and run the to-do app project. Open two terminal windows and use the following commands at the root directory of the SDK repo:
 
 ```bash
 # In one terminal window
-npm run watch
+npm run watch -w reactjs-todo
 
 # In the other terminal window
-npm start
+npm start -w reactjs-todo
 ```
+
+*Note: we use npm workspaces to manage our sample apps, so using the `-w` option specifies what you want to build, watch and start.*
 
 The `watch` command watches for file changes and rebuilds the project when necessary. The `start` command runs the two web servers needed for the client app and resource server. You do not need to restart either command, unless you do the following:
 
@@ -269,7 +271,7 @@ If you encounter errors, here are a few tips:
 
 ### Step 1. Configure the SDK to your ForgeRock server
 
-Now that we have our environment and servers setup, let’s jump into the application! Within your IDE of choice, navigate to the `/client` directory. This directory is where you will spend the rest of your time.
+Now that we have our environment and servers setup, let’s jump into the application! Within your IDE of choice, navigate to the `samples/reactjs-todo/client` directory. This directory is where you will spend the rest of your time.
 
 First, open up the `index.js` file, import the `Config` object from the JavaScript SDK and call the `set` method on this object:
 
@@ -813,7 +815,7 @@ Once the Todos page renders, notice how the the todo collection has a persistent
 
 {% include image-wide.html imageurl="/assets/images/posts/2021/react-todo-app-screenshots/todos-page-loading.png" title="To-dos page loading to-dos" caption="Screenshot of to-dos page with persistent spinner" %}
 
-To make resource requests to an protected endpoint, we have an `HttpClient` module that provides a simple wrapper around the native `fetch` method of the browser. When you call the `request` method, it will retrieve the user’s access token, and attach it as a Bearer Token to the request as an `authorization` header. This is what the resource server will use to make its own request to the ForgeRock server to validate the user’s access token.
+To make resource requests to a protected endpoint, we have an `HttpClient` module that provides a simple wrapper around the native `fetch` method of the browser. When you call the `request` method, it will retrieve the user’s access token, and attach it as a Bearer Token to the request as an `authorization` header. This is what the resource server will use to make its own request to the ForgeRock server to validate the user’s access token.
 
 Open `utilities/request.js` and import the `HttpClient` from the ForgeRock SDK. Then, replace the native fetch method with the `HttpClient.request` method.
 
