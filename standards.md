@@ -49,6 +49,7 @@ featured_image: /assets/images/covers/4.jpg
     - [NEVER rewrite public or another’s history](#never-rewrite-public-or-anothers-history)
 
 ## Summary
+
 Software engineering at scale can be just as much a war of attrition against a seemingly insurmountable mountain of frustration as it is a test of raw, problem-solving skill. Producing performant, resilient, maintainable software that meets modern user, product and quality requirements is hard, and it's only getting harder.
 
 Because of this, we are frequently reminded of the consequences of this endeavor: extreme burnout, employee turnover, lack of fulfillment and chronic stress seen in the workforce.
@@ -73,11 +74,11 @@ First and foremost, anything worthy of making a difference is not made by a sing
 
 ### Diversity & Inclusion
 
-It is important not to forget the inherent diversity in organizations of any size. As we look into the future, this diversity is inevitably going to increase, and this is good. Study after study has shown that diverse organization deliver more value. Rather than fight against this, we should embrace it. But, know that diversity in-and-of-itself isn’t enough. It’s just one side of a coin. The other side? _Inclusion_.
+It is important not to forget the inherent diversity in organizations of any size. As we look into the future, this diversity is inevitably going to increase, and this is good. Study after study has shown that diverse organizations deliver more value. Rather than fight against this, we should embrace it. But, know that diversity in-and-of-itself isn’t enough. It’s just one side of a coin. The other side? _Inclusion_.
 
 Empowered, included individuals ensure a organization's cohesion and resilience, and both are critical to any project that will last more than just one iteration. Organizations that have strong cohesion and resilience will consistently outperform the stereotypical “dream team” of 10X’ers, ninjas or rockstars.
 
-To increase inclusion, we need to avoid speaking in ways that can inherently exclude people from our world. One example is how we often project the male gender as the default for both people and inanimate objects. Another is avoiding social activities that could exclude others. Planning a work lunch? Ensure everyone has an option to eat, whether vegetarian, vegan or otherwise.
+To increase inclusion, we need to avoid speaking in ways that can inherently exclude people from our world. One example is how we often project the male gender as the default for both people and inanimate objects. Another is avoiding language that reinforces damaging stereotypes: blacklist/whitelist, master-slave, "granny" test ... all of these play to social inequities and stereotypes that can have damaging affect on those it references. One more example could be social activities that could exclude others. Planning a work lunch? Ensure everyone has an option to eat: vegetarian, halal, kosher ...
 
 ### Reduce unnecessary conflict
 
