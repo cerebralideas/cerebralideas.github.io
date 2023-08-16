@@ -1,9 +1,9 @@
 ---
 layout: post
-title: 'Session-Based Versus OAuth-Based Access'
+title: "Session-Based Versus OAuth-Based Access"
 tags: [Architecture, Authentication, Session, OAuth, ForgeRock]
 author: justin
-featured_image: /assets/images/posts/2022/hand-holding-coin-by-zsun-fi.webp
+featured_image: /assets/images/posts/2022/hand-holding-coin-by-zsun-fi-unsplash.webp
 ---
 
 There are many factors in designing a protected system, but one of the most important decisions that need to be made lies in the choice of the Access Artifact that your system will use to represent a verified entity. The two most common Access Artifacts are the Session Token and the OAuth Access Token. Although both artifacts _can_ be used together within a system, we will mostly discuss these artifacts as an either-or for the sake of simplicity.
