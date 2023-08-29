@@ -8,7 +8,55 @@ author: justin
 
 Advanced development tutorial for implementing Token Vault plugin with the ForgeRock JavaScript SDK.
 
-## First, Why Advanced Token Security?
+## Table of contents
+
+([Skip to content](#first-why-advanced-token-security))
+
+- [First, why advanced token security?](#first-why-advanced-token-security)
+- [The Backend for Front-End pattern](#the-backend-for-front-end-pattern)
+- [Origin Isolation](#origin-isolation)
+- [What is Token Vault?](#what-is-token-vault)
+- [What you will learn](#what-you-will-learn)
+  - [This is not a guide on how to build a React app](#this-is-not-a-guide-on-how-to-build-a-react-app)
+  - [Using this guide](#using-this-guide)
+- [Requirements](#requirements)
+  - [Knowledge requirements](#knowledge-requirements)
+  - [Technical requirements](#technical-requirements)
+- [ForgeRock setup](#forgerock-setup)
+  - [Step 1. Configure CORS (Cross-Origin Resource Sharing)](#step-1-configure-cors-cross-origin-resource-sharing)
+  - [Step 2. Create two OAuth clients](#step-2-create-two-oauth-clients)
+  - [Step 3. Create a test user](#step-3-create-a-test-user)
+- [Local project setup](#local-project-setup)
+  - [Step 1. Installing the project](#step-1-installing-the-project)
+  - [Step 2. Create the `.env` file](#step-2-create-the-env-file)
+- [Build and run the project](#build-and-run-the-project)
+- [View the app in browser](#view-the-app-in-browser)
+- [Install Token Vault module](#install-token-vault-module)
+- [Implement the Token Vault Proxy](#implement-the-token-vault-proxy)
+  - [Step 1. Scaffold the Proxy](#step-1-scaffold-the-proxy)
+  - [Step 2. Add the npm workspace](#step-2-add-the-npm-workspace)
+  - [Step 3. Setup the supporting files](#step-3-setup-the-supporting-files)
+  - [Step 4. Create & configure the Proxy](#step-4-create--configure-the-proxy)
+  - [Step 5. Build & verify the Proxy](#step-5-build--verify-the-proxy)
+- [Implement the Token Vault Interceptor](#implement-the-token-vault-interceptor)
+  - [Step 1. Create the Interceptor's build config](#step-1-create-the-interceptors-build-config)
+  - [Step 2. Create the new interceptor file](#step-2-create-the-new-interceptor-file)
+  - [Step 3. Import & initialize the `interceptor` module](#step-3-import--initialize-the-interceptor-module)
+  - [Step 4. Build the Interceptor](#step-4-build-the-interceptor)
+  - [Step 5. Ensure `interceptor.js` is accessible](#step-5-ensure-interceptorjs-is-accessible)
+- [Implement the Token Vault Client](#implement-the-token-vault-client)
+  - [Step 1. Add HTML element to `index.html`](#step-1-add-html-element-to-indexhtml)
+  - [Step 2. Import & initialize the `client` module](#step-2-import--initialize-the-client-module)
+  - [Step 3. Register the Interceptor, Proxy & Token Store](#step-3-register-the-interceptor-proxy--token-store)
+  - [Step 4. Replace the SDK's default token store](#step-4-replace-the-sdks-default-token-store)
+  - [Step 5. Check for existing tokens](#step-5-check-for-existing-tokens)
+- [Build and run the apps](#build-and-run-the-apps)
+- [Troubleshooting](#troubleshooting)
+  - [Getting failure in the service worker registration?](#getting-failure-in-the-service-worker-registration)
+  - [Tokens are not being saved under any origin](#tokens-are-not-being-saved-under-any-origin)
+  - [I'm getting a CORS failure](#im-getting-a-cors-failure)
+
+## First, why advanced token security?
 
 In JavaScript Single Page Applications (or SPA), OAuth/OIDC Tokens (referred to from here-on as "tokens") are typically stored via the browser's [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API): `localStorage` or `sessionStorage`. The security mechanism the browser uses to ensure data doesn't leak out to unintended actors is through the "[Same-Origin Policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)". In short, only JavaScript running on the exact same origin (scheme, domain and port) can access the stored data.
 
@@ -37,7 +85,7 @@ There are two solutions that can increase token security:
 1. Backend for Front-End
 2. Origin Isolation
 
-## The Backend for Front-End Pattern
+## The Backend for Front-End pattern
 
 One solution that is quite common is to avoid storing high-value secrets within the browser in the first place. This can be done with a dedicated [Backend for Front-End, or BFF](https://samnewman.io/patterns/architectural/bff/) (yeah, it's a silly initialism). This is increasingly becoming a common pattern for apps made with common meta-frameworks, like Next, Nuxt, SvelteKit, etc. The server component of these frameworks can store the tokens on the front-end's behalf using in-memory stores or just writing the token into an HTTPOnly cookie, and requests that require authorization can be proxied through the accompanying server where the tokens are accessible. Therefore, no token needs to be stored on the front-end, eliminating the risk.
 
@@ -57,19 +105,19 @@ The Token Vault is a codified implementation of Origin Isolation that [you can r
 
 It's equally important to note that even though your main app doesn't need much modification, additional build and server requirements are necessary, which introduces complexity and added maintenance to your system. It is recommended to only introduce Token Vault to an app if heightened security measures are a requirement of your system.
 
-## What You Will Learn
+## What you will learn
 
 We will use an existing React JS, to-do sample application similar to what [we built in a previous tutorial](https://backstage.forgerock.com/docs/sdks/latest/blog/build-protected-reactjs-web-app.html) as a starting point for implementing Token Vault. This will represent a "realistic", web application that has an existing implementation of ForgeRock's JavaScript SDK. Unlike the previous tutorial, we'll start with a fully working app, and focus on just adding Token Vault.
 
 This tutorial is going to focus on OAuth/OIDC authorization and token management, so authentication related concerns like login and registration journeys are going to be handled outside the app. This is referred to as Centralized Login or the Authorization Code Flow (with PKCE).
 
-### This is Not a Guide on How to Build a React App
+### This is not a guide on how to build a React app
 
 How React apps are architected or constructed is outside the scope of this guide. It’s also worth noting that there are many React-based frameworks and generators for building web applications, such as Next.js, Remix, and Gatsby. What is "best" is highly contextual to the product and user requirements for any given project.
 
 To demonstrate our Token Vault integration, we will be using a simplified, non-production-ready, to-do app. This to-do app represents a Single Page Application (SPA) with nothing more than React Router added to "the stack" for routing and redirection.
 
-### Using This Guide
+### Using this guide
 
 This is a "hands-on" guide. We are providing the web app and resource server for you. You can find the repo on GitHub to follow along. All you’ll need is your own ForgeRock Identity Cloud or Access Manager. If you don’t have access to either, and you are interested in ForgeRock’s Identity and Access Management platform, reach out to a representative today, and we’ll be happy to get you started.
 
@@ -80,7 +128,7 @@ Two ways of using this guide
 
 ## Requirements
 
-### Knowledge Requirements
+### Knowledge requirements
 
 1. JavaScript and the npm ecosystem of modules
 2. The command line interface (such as Shell or Bash)
@@ -89,12 +137,12 @@ Two ways of using this guide
 5. Context API: global state will be managed with this concept
 6. Build systems/bundlers and development servers: We will use basic Vite configuration and commands
 
-### Technical Requirements
+### Technical requirements
 
 - Admin access to an instance of ForgeRock Identity Cloud or Access Manager (AM)
 - Node.js >= 16 & npm >= 8 (please check your version with `node -v` and `npm -v`)
 
-## ForgeRock Setup
+## Forgerock setup
 
 NOTE: If you've already completed the previous tutorial for React JS or Angular, then you may already have most of this setup within your ForgeRock server. We'll call out the newly introduced data points to ensure you don't miss the configuration.
 
@@ -116,17 +164,17 @@ Failed to register a ServiceWorker for scope ('https://example.com:8000/') with 
 An unknown error occurred when fetching the script
 ```
 
-{% include image-wide.html imageurl="/assets/images/posts/2021/react-todo-app-screenshots/cors-configuration.png" title="Example CORS from ForgeRock ID Cloud" caption="Screenshot of CORS configuration within ID Cloud" %}
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/token-vault-cors-config.png" title="Example CORS from ForgeRock ID Cloud" caption="Screenshot of Token Vault CORS configuration with two origins in ID Cloud" %}
 
 For more information about CORS configuration, [visit our ForgeRock documentation for CORS on AM](https://backstage.forgerock.com/docs/am/7/security-guide/enable-cors-support.html) or [for CORS configuration on ID Cloud](https://backstage.forgerock.com/docs/idcloud/latest/tenants/configure-cors.html).
 
-### Step 2. Create Two OAuth Clients
+### Step 2. Create two OAuth clients
 
 Within the ForgeRock server, create two OAuth clients: one for the React web app, and one for the Node.js resource server.
 
 Why two? It's conventional to have one OAuth client per app in the system. For this case, a public OAuth client for the React app will provide our app with OAuth/OIDC tokens. The Node.js server will validate the user's Access Token shared via the React app using its own confidential OAuth client.
 
-#### Public OAuth Client Settings
+#### Public OAuth client settings
 
 - **Client name/ID**: `CentralLoginOAuthClient`
 - **Client type**: `Public`
@@ -140,7 +188,7 @@ Why two? It's conventional to have one OAuth client per app in the system. For t
 
 _New: The client name and redirection/sign-in URL has changed from previous tutorial as well as the Refresh Token grant and response type._
 
-#### Confidential OAuth Client Settings
+#### Confidential OAuth client settings
 
 - **Client name/ID**: `RestOAuthClient`
 - **Client type**: `Confidential`
@@ -149,11 +197,11 @@ _New: The client name and redirection/sign-in URL has changed from previous tuto
 - **Grant types**: `Authorization Code`
 - **Token authentication endpoint method**: `client_secret_basic`
 
-{% include image-wide.html imageurl="/assets/images/posts/2021/react-todo-app-screenshots/oauth-client-configuration.png" title="Example OAuth client from ForgeRock ID Cloud" caption="Screenshot of an OAuth client configuration in ID Cloud" %}
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/central-login-oauth-client-config.png" title="Example OAuth client from ForgeRock ID Cloud" caption="Screenshot of an Centralized Login OAuth client configuration in ID Cloud" %}
 
 For more information about configuring OAuth clients, [visit our ForgeRock documentation for OAuth 2.0 client configuration on AM](https://backstage.forgerock.com/docs/am/7/oauth2-guide/oauth2-register-client.html) or [for OAuth client/application configuration on ID Cloud](https://backstage.forgerock.com/docs/idcloud/latest/realms/applications.html).
 
-### Step 3. Create a Test User
+### Step 3. Create a test user
 
 Create a simple test user (identity) in your ForgeRock server within the realm you will be using.
 
@@ -168,9 +216,9 @@ If you are using ForgeRock’s AM, click on **Identities** item in the left navi
 
 **Note: You will use this UUID as the username for logging into the React app.**
 
-## Local Project Setup
+## Local project setup
 
-### Step 1. Installing the Project
+### Step 1. Installing the project
 
 First, clone the [JavaScript SDK project](https://github.com/ForgeRock/forgerock-javascript-sdk) to your local computer, `cd` (change directory) into the project folder, checkout the branch for this guide, and install the needed dependencies:
 
@@ -183,7 +231,7 @@ npm i
 
 NOTE: There’s also a branch that represents the completion of this guide. If you get stuck, you can visit `blog/token-vault-tutorial/complete` branch in Github.
 
-### Step 2. Create the `.env` File
+### Step 2. Create the `.env` file
 
 First, open the `.env.example` file in the root directory. Copy this file and name it `.env`. Add your relevant values to this new file as it will provide all the important configuration settings to your applications.
 
@@ -219,7 +267,7 @@ We are using Vite for our client apps' build system and development server, so b
 - `VITE_AM_REALM_PATH`: the realm of your ForgeRock server (likely `alpha` if using Identity Cloud, or `root` if using standalone AM)
 - `VITE_REST_OAUTH_CLIENT & VITE_REST_OAUTH_SECRET`: this will be the OAuth client you configure in your ForgeRock server to support the REST API server
 
-## Build and Run the Project
+## Build and run the project
 
 Now that everything is setup, build and run the to-do app project. Open two terminal windows and use the following commands at the root directory of the SDK repo:
 
@@ -235,19 +283,23 @@ _Note: we use npm workspaces to manage our multiple sample apps, but understandi
 
 The `dev:react` command above uses Vite and will restart on any change to a dependent file. This will also apply to the `dev:proxy` we will build shortly. The `dev:api` command runs a basic Node server with no "watchers". This should not be relevant as you won't have to modify any of its code. If a change is made within the `todo-api-server` workspace, or an environment variable it relies on, a restart would be required.
 
-## View the App in Browser
+## View the app in browser
 
 In a _different_ browser than the one you are using to administer the ForgeRock server, visit the following URL: `http://localhost:5173` (I typically use Edge for the app development and Chrome for the ForgeRock server administration). A home page should be rendered explaining the purpose of the project. It should look like the below (it may be dark if you have the dark theme/mode set in your OS):
 
-{% include image-wide.html imageurl="/assets/images/posts/2021/react-todo-app-screenshots/home-page.png" title="To-do app home page" caption="Screenshot of the home page of the sample app" %}
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/demo-app-home-page.png" title="To-do app home page" caption="Screenshot of the home page of the sample app (logged out experience)" %}
 
 If you encounter errors, here are a few tips:
 
-- Visit `http://localhost:5174/health-check` in the same browser you use for the React app; ensure it responds with "OK"
-- Check the terminal that has the `watch` command running for error output
+- Visit `http://localhost:5174/healthcheck` in the same browser you use for the React app; ensure it responds with "OK"
+- Check the terminal that has the `dev:react` command running for error output
 - Ensure you are not logged into the ForgeRock server within the same browser as the sample app; logout from ForgeRock if you are and use a different browser
 
-## Install Token Vault Module
+Log into the app with your test user. After successfully logging in, you should see the app react to the existence of the valid tokens. Open your browser's developer tools to inspect its `localStorage`. You should see a single origin with an object containing tokens.
+
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/demo-app-home-page-logged-in.png" title="To-do app home page as logged in user" caption="Screenshot of the home page of the sample app with a logged-in user showing tokens in localStorage" %}
+
+## Install Token Vault module
 
 Install the Token Vault npm module within the root of the app:
 
@@ -275,7 +327,7 @@ Next, we'll need to create a third application, the Token Vault Proxy. Follow th
 +   └── vite.config.ts
 ```
 
-### Step 2. Add the npm Workspace
+### Step 2. Add the npm workspace
 
 To ease some of the dependency management and script running, add this new "workspace" to our root `package.json`, and then add a new script to our `scripts`:
 
@@ -286,28 +338,30 @@ To ease some of the dependency management and script running, add this new "work
 
   "scripts": {
     "clean": "git clean -fdX -e \"!.env\"",
+    "build:api": "npm run build --workspace todo-api-server",
     "build:react": "npm run build --workspace todo-react-app",
 +   "build:proxy": "npm run build --workspace token-vault-proxy",
-    "build:server": "npm run build --workspace todo-api-server",
+    "dev:api": "npm run dev --workspace todo-api-server",
     "dev:react": "npm run dev --workspace todo-react-app",
 +   "dev:proxy": "npm run dev --workspace token-vault-proxy",
-    "dev:server": "npm run dev --workspace todo-api-server",
     "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "serve:react": "npm run serve --workspace todo-react-app",
-+   "serve:proxy": "npm run serve --workspace token-vault-proxy",
-    "serve:server": "npm run serve --workspace todo-api-server"
+    "serve:api": "npm run serve --workspace todo-api-server",
+-   "serve:react": "npm run serve --workspace todo-react-app"
++   "serve:react": "npm run serve --workspace todo-react-app",
++   "serve:proxy": "npm run serve --workspace token-vault-proxy"
   },
 
 @@ collapsed @@
 
   "workspaces": [
-    "todo-api-server"
-    "todo-react-app",
-+   "token-vault-proxy",
+    "todo-api-server",
+-   "todo-react-app"
++   "todo-react-app",
++   "token-vault-proxy"
   ]
 ```
 
-### Step 3. Setup the Supporting Files
+### Step 3. Setup the supporting files
 
 Create a new directory at the root named `token-vault-proxy`, then create `package.json`.
 
@@ -323,7 +377,7 @@ Create a new directory at the root named `token-vault-proxy`, then create `packa
 +   "scripts": {
 +     "dev": "vite",
 +     "build": "vite build",
-+     "serve": "vite preview --port 7443"
++     "serve": "vite preview --port 5175"
 +   },
 +   "dependencies": {},
 +   "devDependencies": {},
@@ -336,22 +390,33 @@ Now, create the Vite config file.
 ```diff-ts
 @@ token-vault-proxy/vite.config.ts @@
 
-+ import { defineConfig } from "vite";
++ import { defineConfig, loadEnv } from 'vite';
 +
 + // https://vitejs.dev/config/
-+ export default defineConfig(() => {
++ export default defineConfig(({ mode }) => {
++   const env = loadEnv(mode, `${process.cwd()}/../`);
++   const port = Number(new URL(env.VITE_APP_URL).port);
++
 +   return {
-+     envDir: "../", // Points to the `.env` created in the root dir
++     envDir: '../', // Points to the `.env` created in the root dir
 +     root: process.cwd(),
 +     server: {
-+       port: 7443,
++       port,
 +       strictPort: true,
 +     },
 +   };
 + });
 ```
 
-Lastly, create the `index.html` file. This file can be overly simple as all you need is the inclusion of the JavaScript file that will be our Proxy.
+What does the above do? Good question! Let's review it:
+
+1. We import helper functions from `vite`
+2. Using `defineConfig`, we pass in a function, as opposed to an object, because we want to calculate values at runtime
+3. The parameter `mode` helps inform Vite how the config is being executed, useful when you need to calculate env variables
+4. Then, extract the `port` out of our app's configured origin, which _should_ be `5175`
+5. Finally, use this data to construct the config object and return it
+
+Now, create the `index.html` file. This file can be overly simple as all you need is the inclusion of the JavaScript file that will be our Proxy.
 
 ```diff-html
 @@ token-vault-proxy/index.html @@
@@ -365,19 +430,19 @@ Lastly, create the `index.html` file. This file can be overly simple as all you 
 
 If you're not familiar with how Vite works, seeing the `.ts` extension might look at bit weird in an HTML file. But don't worry, Vite uses this to find entry files and it will rewrite the actual `.js` reference for us.
 
-### Step 4. Create & Configure the Proxy
+### Step 4. Create & configure the Proxy
 
 Let's create and configure the Token Vault Proxy according to our system needs. First, create the `src` directory and the `index.ts` file within it.'
 
 ```diff-ts
-@@ src/index.ts @@
+@@ token-vault-proxy/src/index.ts @@
 
-+ import { proxy } from "@forgerock/token-vault";
++ import { proxy } from '@forgerock/token-vault';
 +
 + // Initialize the token vault proxy
 + proxy({
 +   app: {
-+     origin: import.meta.env.VITE_TOKEN_VAULT_APP_ORIGIN,
++     origin: new URL(import.meta.env.VITE_APP_URL).origin,
 +   },
 +   forgerock: {
 +     clientId: import.meta.env.VITE_AM_WEB_OAUTH_CLIENT,
@@ -395,7 +460,7 @@ Let's create and configure the Token Vault Proxy according to our system needs. 
 
 The configuration above represents the minimum needed to create the Proxy. We need to declare the app's origin, as that's the only source to which the Proxy will respond. We have the ForgeRock configuration, in order for the Proxy to effectively callout to the ForgeRock server for token lifecycle management. Finally, there's the Proxy's URL array that acts as an allow-list to ensure that only valid URLs are proxied with the appropriate tokens.
 
-### Step 5. Build & Verify the Proxy
+### Step 5. Build & verify the Proxy
 
 With everything setup, build the proxy app and verify it's being served correctly.
 
@@ -403,15 +468,13 @@ With everything setup, build the proxy app and verify it's being served correctl
 npm run dev:proxy
 ```
 
-Once the script finishes its initial build and runs the server, you can now check the app and ensure its running. Go to `http://localhost:5175` in your browser. You should see an "Proxy is OK" printed to screen, and there should be no errors in the Console or Network tab of your browser's dev tools.
+Once the script finishes its initial build and runs the server, you can now check the app and ensure its running. Go to `http://localhost:5175` in your browser. You should see "Proxy is OK" printed to screen, and there should be no errors in the Console or Network tab of your browser's dev tools.
 
-```
-<screenshot here>
-```
+{% include image-caption-shadow.html imageurl="/assets/images/posts/2023/build-advanced-token-security/viewing-proxy-in-browser.png" title="Proxy viewed directly in browser" caption="Screenshot of the Proxy directly viewed in browser with text 'Proxy is OK'" %}
 
 ## Implement the Token Vault Interceptor
 
-### Step 1. Create the Interceptor's Build Config
+### Step 1. Create the Interceptor's build config
 
 Since the Token Vault Interceptor is a Service Worker, it needs to be bundled separately from your main application code. To do this, write a _new_ Vite config file within the `todo-react-app` directory/workspace named `vite.interceptor.config.ts`. We do not recommend trying to use the same configuration file for both your app and Interceptor.
 
@@ -429,30 +492,32 @@ Now that you have the new Vite config for the Interceptor, import the `defineCon
 ```diff-ts
 @@ todo-react-app/vite.interceptor.config.ts @@
 
-+ import { defineConfig } from "vite";
++ import { defineConfig } from 'vite';
 +
 + // https://vitejs.dev/config/
 + export default defineConfig({
 +   build: {
 +     emptyOutDir: false,
 +     rollupOptions: {
-+       input: "src/interceptor/index.ts",
++       input: 'src/interceptor/index.ts',
 +       output: {
-+         dir: "public", // Treating this like a static asset is important
-+         entryFileNames: "interceptor.js",
-+         format: "iife", // Very important for better browser support
++         dir: 'public', // Treating this like a static asset is important
++         entryFileNames: 'interceptor.js',
++         format: 'iife', // Very important for better browser support
 +       },
 +     },
 +   },
-+   envDir: "../", // Points to the `.env` created in the root dir
++   envDir: '../', // Points to the `.env` created in the root dir
 + });
 ```
 
-Notice above we provide the Interceptor source file as the input, and then explicitly tell Vite to bundle it as an IIFE ([Immediately Invoked Function Expression](https://developer.mozilla.org/en-US/docs/Glossary/IIFE)) and save the output to this app's `public` directory. This means the Interceptor will be available as a static asset at the root of our web server.
+Note: rather than passing a function into `defineConfig`, we are passing a plain config object. This is because we don't need any variables at runtime, like env values.
 
-It is important to note that bundling it as an IIFE and configuring the output to the public directory is intentional and important. Bundling as an IIFE removes any module system from the file, which is vital to supporting all major browsers within the Service Worker context. Outputting it to the public directory like a static asset is also important. It allows the `scope` of the Service Worker to also be available at the root. You can [read more about Service Worker scopes on MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+In the above, we provide the Interceptor source file as the input, and then explicitly tell Vite to bundle it as an IIFE ([Immediately Invoked Function Expression](https://developer.mozilla.org/en-US/docs/Glossary/IIFE)) and save the output to this app's `public` directory. This means the Interceptor will be available as a static asset at the root of our web server.
 
-### Step 2. Create the New Interceptor File
+It is important to know that bundling it as an IIFE and configuring the output to the public directory is intentional and important. Bundling as an IIFE removes any module system from the file, which is vital to supporting all major browsers within the Service Worker context. Outputting it to the public directory like a static asset is also important. It allows the `scope` of the Service Worker to also be available at the root. You can [read more about Service Worker scopes on MDN](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
+
+### Step 2. Create the new Interceptor file
 
 Let's create the new interceptor file that is expected as the entry file to our new Vite config.
 
@@ -467,7 +532,7 @@ Let's create the new interceptor file that is expected as the entry file to our 
   │ └── vite.interceptor.config.ts
 ```
 
-### Step 3. Import & Initialize the `interceptor` Module
+### Step 3. Import & initialize the `interceptor` module
 
 Configure your Interceptor with the following variables from your `.env` file.
 
@@ -504,9 +569,9 @@ Now that we have the dedicated Vite config and the Interceptor entry file create
 @@ collapsed @@
 
     "scripts": {
--     "dev": "npm run build:interceptor && vite",
+-     "dev": "vite",
 +     "dev": "npm run build:interceptor && vite",
--     "build": "npm run build:interceptor && vite build",
+-     "build": "vite build",
 +     "build": "npm run build:interceptor && vite build",
 +     "build:interceptor": "vite build -c ./vite.interceptor.config.ts",
       "serve": "vite preview --port 5173"
@@ -517,7 +582,7 @@ Now that we have the dedicated Vite config and the Interceptor entry file create
 
 It's worth noting that the Interceptor will only be rebuilt at the start of the command, and not rebuilt after any change thereafter as there's no "watch" command used here for the Interceptor itself. Once this portion of code is correctly setup, it should rarely change, so this should be fine. Your main app will still be rebuilt and "hot-reloading" will take place.
 
-Run `npm run build:interceptor`, and you should be able to see the resulting `interceptor.js` built and placed into your `public` directory.
+Run `npm run build:interceptor -w todo-react-app` (this runs the new command you just wrote above in the `todo-react-app` workspace), and you should be able to see the resulting `interceptor.js` built and placed into your `public` directory.
 
 ```diff-txt
   root
@@ -528,7 +593,7 @@ Run `npm run build:interceptor`, and you should be able to see the resulting `in
 
 ```
 
-### Step 5. Ensure `interceptor.js` is Accessible
+### Step 5. Ensure `interceptor.js` is accessible
 
 Since we haven't implemented the Interceptor yet in the main app, we can't really test it. But, we can at least make sure the file is accessible in the browser as we expect. To do this, run the following command:
 
@@ -538,11 +603,13 @@ npm run dev:react
 
 Once the command starts the server, using your browser, visit `http://localhost:5173/interceptor.js`. You should plainly see the fully built JavaScript file. Ensure it does not have any `import` statements and looks complete (it should contain more code than just the original source file you wrote above).
 
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/interceptor-file-raw.png" title="Raw JavaScript of Interceptor" caption="Viewing raw JavaScript from Interceptor file in browser" %}
+
 ## Implement the Token Vault Client
 
 Now that we have all the separate pieces set up, wire it all together with the Token Vault Client plugin.
 
-### Step 1. Add HTML Element to `index.html`
+### Step 1. Add HTML element to `index.html`
 
 When we initiate the Proxy, it will need a real DOM element to mount to. The easiest way to ensure we have a proper element, we'll just directly add it to our `index.html`.
 
@@ -552,19 +619,19 @@ When we initiate the Proxy, it will need a real DOM element to mount to. The eas
 @@ collapsed @@
 
     <body>
-      <!-Root div for mounting React app -->
+      <!-- Root div for mounting React app -->
       <div id="root" class="cstm_root"></div>
 +
-+     <!-Root div for mounting Token Vault Proxy (iframe) -->
++     <!-- Root div for mounting Token Vault Proxy (iframe) -->
 +     <div id="token-vault"></div>
 
-      <!-Import React app -->
+      <!-- Import React app -->
       <script type="module" src="/src/index.tsx"></script>
     </body>
   </html>
 ```
 
-### Step 2. Import & Initialize the `client` Module
+### Step 2. Import & initialize the `client` module
 
 First, import the `client` module and remove the `TokenStorage` module from the SDK import. Second, call the `client` function with the below minimal configuration. This is how we "glue" the three entities together within your main app. This function returns an object that we use to register and instantiate each entity.
 
@@ -573,22 +640,27 @@ First, import the `client` module and remove the `TokenStorage` module from the 
 
 - import { Config, TokenStorage } from '@forgerock/javascript-sdk';
 + import { Config } from '@forgerock/javascript-sdk';
-+ import { client } from "@forgerock/token-vault";
++ import { client } from '@forgerock/token-vault';
   import ReactDOM from 'react-dom/client';
 
 @@ collapsed @@
 
 + const register = client({
 +   app: {
-+     origin: import.meta.env.TOKEN_VAULT_APP_ORIGIN,
++     origin: c.TOKEN_VAULT_APP_ORIGIN,
 +   },
 +   interceptor: {
-+     file: "/interceptor.js", // references public/interceptor.js
++     file: '/interceptor.js', // references public/interceptor.js
 +   },
 +   proxy: {
-+     origin: import.meta.env.TOKEN_VAULT_PROXY_ORIGIN,
++     origin: c.TOKEN_VAULT_PROXY_ORIGIN,
 +   },
 + });
++
+  /**
+   * Initialize the React application
+   */
+  (async function initAndHydrate() {
 
 @@ collapsed @@
 ```
@@ -599,13 +671,18 @@ This function ensures the app, Interceptor and Proxy are appropriately configure
 
 ### Step 2. Register the Interceptor, Proxy & Token Store
 
-Now that we've initialized and configured the client, we now register the Interceptor, the Proxy and the Token Vault Store.
+Now that we've initialized and configured the client, we now register the Interceptor, the Proxy and the Token Vault Store just under the newly added code from above.
 
 ```diff-tsx
 @@ todo-react-app/src/index.tsx @@
 
 @@ collapsed @@
 
+    proxy: {
+      origin: c.TOKEN_VAULT_PROXY_ORIGIN,
+    },
+  });
++
 + // Register the Token Vault Interceptor
 + await register.interceptor();
 +
@@ -613,22 +690,33 @@ Now that we've initialized and configured the client, we now register the Interc
 + await register.proxy(
 +   // This must be a live DOM element; it cannot be a Virtual DOM element
 +   // `token-vault` is the element added in Step 1 above to `todo-react-app/index.html`
-+   document.getElementById("token-vault") as HTMLElement
++   document.getElementById('token-vault') as HTMLElement
 + );
 +
 + // Register the Token Vault Store
 + const tokenStore = register.store();
+
+  /**
+   * Initialize the React application
+   */
+  (async function initAndHydrate() {
 
 @@ collapsed @@
 ```
 
 Registering the Interceptor is what requests and registers the Service Worker. Calling `register.interceptor` returns [the `ServiceWorkerRegistration` object that can be used to unregister the Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) as well as other functions, if that's needed. We won't be implementing that in this tutorial.
 
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/home-page-with-interceptor-active.png" title="Sample app with Token Vault Interceptor active" caption="Screenshot of the home page of the sample app with service worker active" %}
+
 Registering the Proxy constructs the `iframe` component and mounts it do the DOM element passed into the method. It's important to note that this must be a real, available DOM element; not a Virtual DOM element. This results in the Proxy being "registered" as a child frame, and therefore accessible, to your main app. Calling `register.proxy` also returns an optional reference to the DOM element of the `iframe` that can be used to manually destroy the element and the Proxy, if needed.
+
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/home-page-with-mounted-iframe.png" title="Sample app with Token Vault Proxy mounted in DOM" caption="Screenshot of the home page of the sample app with DOM showing iframe mounted" %}
 
 Finally, registering the Store will provide us the object that will be used to replace the default token store within the SDK. There are some additional convenience methods on this `store` object that we'll take advantage of later in the tutorial.
 
-### Step 3. Replace the SDK's Default Token Store
+You will see a few errors in the console, but don't worry about those at the moment. The next steps will resolve them.
+
+### Step 3. Replace the SDK's default token store
 
 Within the existing SDK configuration, pass the `tokenStore` object we created in the previous step to the `set` method to override the SDK's internal token store.
 
@@ -677,7 +765,7 @@ Currently in our application, we check for the existence of stored tokens to pro
 
 Note that this doesn't return the tokens as that would violate the security of keeping them in another origin, but the Proxy will inform you of their existence. This is enough to hint to our UI that the user is likely authorized.
 
-## Build and Run the Apps
+## Build and run the apps
 
 At this point, all the necessary entities are setup, we will now run all the needed servers and test out our new application with Token Vault enabled. Open three different terminal windows all from within the root of this project. Enter each command in its own window:
 
@@ -699,11 +787,13 @@ Open the dev tools of your browser, and proceed to log into the app. You will be
 
 To test whether Token Vault is successfully implemented, go to the Application or Storage tab of your dev tools and inspect the `localStorage` section. You should see two origins: `http://localhost:5173` (our main app) and `http://localhost:5175` (our Proxy). Your user's tokens should be stored under the Proxy's origin (port `5175`), not under the React app's origin (port `5173`). If you observe that behavior, then you have successfully implemented Token Vault. Congratulations, your tokens are now more securely stored!
 
+{% include image-wide.html imageurl="/assets/images/posts/2023/build-advanced-token-security/token-vault-demo-logged-in.png" title="To-do app home page with Token Vault and logged in" caption="Screenshot of sample app with a logged-in user showing tokens in Token Vault under alternative origin" %}
+
 If you don't see the tokens in the Proxy origin's `localStorage`, then follow the troubleshooting section below:
 
 ## Troubleshooting
 
-### Getting failure in the Service Worker registration?
+### Getting failure in the service worker registration?
 
 Make sure you're dedicated Vite config is correct, and check the actual file output for the `interceptor.js`. If the built file has ES Module syntax in it, or it looks incomplete, then that will cause the issue. Service Workers in some browsers, even the latest versions, don't support the same ES version or features as the main browser context.
 

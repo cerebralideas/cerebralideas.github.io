@@ -1,6 +1,14 @@
 code.highlighter-rouge {
-	background-color: #fdf9ed;
+  background-color: #fdf9ed;
 }
 a > .highlighter-rouge {
-	color: inherit;
+  color: inherit;
+}
+
+.kg-image-card.with-shadow > img {
+  border-radius: 0.5em;
+  box-shadow: 0.1em 0.15em 0.75em 0.1em rgba(0, 0, 0, 0.2);
+}
+.kg-image-card.with-shadow > figcaption {
+  margin-top: 2em;
 }
